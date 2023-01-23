@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "42_api",
+    "slug": "42_api",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "42_api"
+}
