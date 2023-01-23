@@ -7,6 +7,9 @@ import { UID, SECRET } from "@env";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import ProjectElement from "../Component/ProjectElement";
+// import { RadarChart } from "react-native-charts-wrapper";
+// import {Radar} from 'react-native-pathjs-charts';
+// import FusionCharts from "react-native-fusioncharts";
 
 const displayProject = (project) => {
   if (project == null) return <></>;
@@ -50,12 +53,14 @@ const displayProjectInProgress = (project) => {
           borderColor: "black",
           borderRadius: 15,
           borderStyle: "dashed",
-          alignItems: 'center',
-          justifyContent: 'center'
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-          <Icon name='window-close-o' size={80}></Icon>
-          <Text style={{fontSize: 20, fontWeight: '900', marginTop: '5%' }}>No project in progress...</Text>
+        <Icon name="window-close-o" size={80}></Icon>
+        <Text style={{ fontSize: 20, fontWeight: "900", marginTop: "5%" }}>
+          No project in progress...
+        </Text>
       </View>
     );
 
@@ -82,10 +87,74 @@ const ProfileScreen = ({ navigation, route }) => {
   const [error, setError] = useState(false);
   const [openProject, setopenProject] = useState(false);
   const [openProjectInProgress, setopenProjectInProgress] = useState(false);
+  const [openSkills, setopenSkills] = useState(false);
   const [accessToken, setAccessToken] = useState("");
   const [userDisplay, setUserDisplay] = useState(null);
   const [userProject, setUserProject] = useState(null);
   const [selectedCursus, setSelectedCursus] = useState("");
+
+  const dataSource = {
+    chart: {
+      caption: "Skill Analysis of Harry",
+      subcaption: "Scale: 1 (low) to 5 (high)",
+      theme: "fusion",
+      showlegend: "0",
+      showdivlinevalues: "0",
+      showlimits: "0",
+      showvalues: "1",
+      plotfillalpha: "40",
+      plottooltext: "Harry's <b>$label</b> skill is rated as <b>$value</b>",
+    },
+    categories: [
+      {
+        category: [
+          {
+            label: "Communication",
+          },
+          {
+            label: "Punctuality",
+          },
+          {
+            label: "Problem Solving",
+          },
+          {
+            label: "Meeting Deadlines",
+          },
+          {
+            label: "Team Player",
+          },
+          {
+            label: "Technical Knowledge",
+          },
+        ],
+      },
+    ],
+    dataset: [
+      {
+        seriesname: "User Ratings",
+        data: [
+          {
+            value: "3",
+          },
+          {
+            value: "3",
+          },
+          {
+            value: "4",
+          },
+          {
+            value: "3",
+          },
+          {
+            value: "2",
+          },
+          {
+            value: "4",
+          },
+        ],
+      },
+    ],
+  };
 
   const [userCoa, setUserCoa] = useState(null);
 
@@ -149,8 +218,8 @@ const ProfileScreen = ({ navigation, route }) => {
         .then((response) => {
           console.log("user display");
           // console.log('oui 1', response.data)
-          console.log("oui 1", Object.keys(response.data.projects_users));
-          // console.log(Object.keys(response.data.cursus_users));
+          console.log("oui 1", Object.keys(response.data.cursus_users[1]));
+          console.log(response.data.cursus_users[1].skills);
           // // console.log(response.data);
           // // console.log(response.data.cursus_users[1]);
 
@@ -571,7 +640,7 @@ const ProfileScreen = ({ navigation, route }) => {
           ></View>
         </View>
       </View>
-      <ScrollView style={{ maxHeight: "50%" }}>
+      <ScrollView style={{ maxHeight: "60%" }}>
         <View
           style={{
             display: "flex",
@@ -591,9 +660,6 @@ const ProfileScreen = ({ navigation, route }) => {
             borderBottomLeftRadius: openProject ? 0 : 15,
             borderBottomRightRadius: openProject ? 0 : 15,
           }}
-          onTouchStart={() => {
-            setopenProject(!openProject);
-          }}
         >
           <Text
             style={{
@@ -609,6 +675,7 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
+              onPress={() => {setopenProject(!openProject)}}
               name="arrow-up"
               size={30}
             />
@@ -617,6 +684,7 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
+              onPress={() => {setopenProject(!openProject)}}
               name="arrow-down"
               size={30}
             />
@@ -667,9 +735,6 @@ const ProfileScreen = ({ navigation, route }) => {
             borderBottomLeftRadius: openProjectInProgress ? 0 : 15,
             borderBottomRightRadius: openProjectInProgress ? 0 : 15,
           }}
-          onTouchStart={() => {
-            setopenProjectInProgress(!openProjectInProgress);
-          }}
         >
           <Text
             style={{
@@ -680,11 +745,12 @@ const ProfileScreen = ({ navigation, route }) => {
           >
             Project In Progress :
           </Text>
-          {openProject ? (
+          {openProjectInProgress ? (
             <Icon
               style={{
                 marginRight: "2%",
               }}
+              onPress={() => {setopenProjectInProgress(!openProjectInProgress)}}
               name="arrow-up"
               size={30}
             />
@@ -693,6 +759,7 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
+              onPress={() => {setopenProjectInProgress(!openProjectInProgress)}}
               name="arrow-down"
               size={30}
             />
@@ -724,9 +791,134 @@ const ProfileScreen = ({ navigation, route }) => {
             )}
           </ScrollView>
         </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "95%",
+            height: 60,
+            backgroundColor:
+              userCoa != null &&
+              userCoa[Math.floor(selectedCursus) ? 0 : 1] == undefined
+                ? userCoa.data[Math.floor(selectedCursus) ? 0 : 1].color
+                : userCoa[Math.floor(selectedCursus) ? 0 : 1].color,
+            marginHorizontal: "2.5%",
+            marginTop: "5%",
+            borderRadius: 15,
+            borderBottomLeftRadius: openSkills ? 0 : 15,
+            borderBottomRightRadius: openSkills ? 0 : 15,
+          }}
+        >
+          <Text
+            style={{
+              marginLeft: "2%",
+              fontSize: 25,
+              fontWeight: "800",
+            }}
+          >
+            Skills :
+          </Text>
+          {openSkills ? (
+            <Icon
+              style={{
+                marginRight: "2%",
+              }}
+              onPress={() => {setopenSkills(!openSkills)}}
+              name="arrow-up"
+              size={30}
+            />
+          ) : (
+            <Icon
+              style={{
+                marginRight: "2%",
+              }}
+              onPress={() => {setopenSkills(!openSkills)}}
+              name="arrow-down"
+              size={30}
+            />
+          )}
+        </View>
+        <View
+          style={{
+            width: "95%",
+            // height: 400,
+            height: openSkills ? 400 : 0,
+            backgroundColor:
+              userCoa != null &&
+              userCoa[Math.floor(selectedCursus) ? 0 : 1] == undefined
+                ? userCoa.data[Math.floor(selectedCursus) ? 0 : 1].color
+                : userCoa[Math.floor(selectedCursus) ? 0 : 1].color,
+            marginHorizontal: "2.5%",
+          }}
+        >
+          <ScrollView>
+            {userDisplay != null &&
+              userDisplay.cursus_users[Math.floor(selectedCursus)].skills.map(
+                (item) => {
+                  return (
+                    <View
+                      style={{
+                        width: "90%",
+                        height: 80,
+                        backgroundColor: "#00000066",
+                        marginHorizontal: "5%",
+                        marginVertical: "1%",
+                        display: "flex",
+                        // flexDirection: "row",
+                        alignItems: "center",
+                        // justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 20,
+                          color: "white",
+                          marginLeft: "2%",
+                        }}
+                      >
+                        {item.name}
+                      </Text>
+                      <View
+                        style={{
+                          width: "80%",
+                          height: "40%",
+                          backgroundColor: "#FFFFFF44",
+                          marginRight: "2%",
+                          marginTop: '2%',
+                          borderRadius: 10,
+                          display: "flex",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <View
+                          style={{
+                            position: "absolute",
+                            width: `${item.level * 100 / 20}%`,
+                            height: "100%",
+                            backgroundColor: "red",
+                          }}
+                        ></View>
+                        <Text
+                          style={{
+                            fontSize: 20,
+                            color: "white",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                          }}
+                        >
+                          {Math.floor(item.level * 100) / 100}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                }
+              )}
+          </ScrollView>
+        </View>
       </ScrollView>
-
-      {/* <Text>This is {route.params.login}'s profile</Text> */}
     </View>
   );
 };
