@@ -14,7 +14,6 @@ import { UID, SECRET } from "@env";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import ProjectElement from "../Component/ProjectElement";
-
 function isPortrait() {
   const dim = Dimensions.get("screen");
   return dim.height >= dim.width;
@@ -216,10 +215,9 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log(Object.keys(response.data))
-          console.log(response.data.cursus_users)
+          console.log(Object.keys(response.data));
+          console.log(response.data.cursus_users);
           if (Object.keys(response.data) == ["data"]) {
-
             setUserDisplay(response.data.data);
             setUserProject(response.data.data.projects_users);
           } else {
@@ -250,7 +248,7 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log(response.data)
+          console.log(response.data);
           setUserCoa(response.data);
 
           const timeout_id = setTimeout(() => {
@@ -390,9 +388,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }
             >
               <Text style={{ fontSize: 20 }}>{`Login: `}</Text>
-              <Text
-                style={{ fontSize: 20, fontWeight: "900", color: "black" }}
-              >
+              <Text style={{ fontSize: 20, fontWeight: "900", color: "black" }}>
                 {userDisplay.login}
               </Text>
             </View>
