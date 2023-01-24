@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, LayoutAnimation, StyleSheet, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import { Component } from 'react';
 
 export class ShakeDiv extends Component {

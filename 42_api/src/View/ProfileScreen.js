@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
 import axios, { all } from "axios";
 import Svg, { Polygon, SvgUri } from "react-native-svg";
@@ -7,20 +14,20 @@ import { UID, SECRET } from "@env";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import ProjectElement from "../Component/ProjectElement";
-// import { RadarChart } from "react-native-charts-wrapper";
-// import {Radar} from 'react-native-pathjs-charts';
-// import FusionCharts from "react-native-fusioncharts";
+
+function isPortrait() {
+  const dim = Dimensions.get("screen");
+  return dim.height >= dim.width;
+}
 
 const displayProject = (project) => {
   if (project == null) return <></>;
-  //   console.log("project key", Object.keys(project[0]));
 
   const tmp = project;
 
   return (
     <>
-      {tmp.map((item, index) => {
-        // console.log(item["validated?"]);
+      {tmp.map((item) => {
         return (
           <ProjectElement
             projectName={item.project.name}
@@ -38,7 +45,6 @@ const displayProjectInProgress = (project) => {
   if (project == null) return <></>;
 
   const tmp = project;
-  // console.log("project key", Object.keys(project[0]));
 
   if (!tmp.length)
     return (
@@ -66,8 +72,7 @@ const displayProjectInProgress = (project) => {
 
   return (
     <>
-      {tmp.map((item, index) => {
-        console.log(item);
+      {tmp.map((item) => {
         return (
           <ProjectElement
             projectName={item.project.name}
@@ -83,6 +88,9 @@ const displayProjectInProgress = (project) => {
 };
 
 const ProfileScreen = ({ navigation, route }) => {
+  const [orientation, setOrientation] = useState(
+    isPortrait() ? "PORTRAIT" : "LANDSCAPE"
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [openProject, setopenProject] = useState(false);
@@ -93,72 +101,9 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userProject, setUserProject] = useState(null);
   const [selectedCursus, setSelectedCursus] = useState("");
 
-  const dataSource = {
-    chart: {
-      caption: "Skill Analysis of Harry",
-      subcaption: "Scale: 1 (low) to 5 (high)",
-      theme: "fusion",
-      showlegend: "0",
-      showdivlinevalues: "0",
-      showlimits: "0",
-      showvalues: "1",
-      plotfillalpha: "40",
-      plottooltext: "Harry's <b>$label</b> skill is rated as <b>$value</b>",
-    },
-    categories: [
-      {
-        category: [
-          {
-            label: "Communication",
-          },
-          {
-            label: "Punctuality",
-          },
-          {
-            label: "Problem Solving",
-          },
-          {
-            label: "Meeting Deadlines",
-          },
-          {
-            label: "Team Player",
-          },
-          {
-            label: "Technical Knowledge",
-          },
-        ],
-      },
-    ],
-    dataset: [
-      {
-        seriesname: "User Ratings",
-        data: [
-          {
-            value: "3",
-          },
-          {
-            value: "3",
-          },
-          {
-            value: "4",
-          },
-          {
-            value: "3",
-          },
-          {
-            value: "2",
-          },
-          {
-            value: "4",
-          },
-        ],
-      },
-    ],
-  };
-
   const [userCoa, setUserCoa] = useState(null);
 
-  const styles = StyleSheet.create({
+  const styles_portrait = StyleSheet.create({
     main_container_loading_error: {
       display: "flex",
       justifyContent: "center",
@@ -169,37 +114,92 @@ const ProfileScreen = ({ navigation, route }) => {
     main_container_profile: {
       width: "100%",
       height: "100%",
-      // backgroundColor: "red"
     },
     info_user_container: {
       width: "100%",
       height: "40%",
-      // display: "flex",
-      // flexDirection: "row",
-      // backgroundColor: "green"
+    },
+    info_user: {
+      height: "80%",
+      width: "50%",
+      display: "flex",
+    },
+    user_profile_pic_container: {
+      width: "90%",
+      height: "80%",
+      marginTop: "5%",
+      marginHorizontal: "5%",
+    },
+    user_login_container: {
+      width: "90%",
+      height: "15%",
+      backgroundColor: "#FFFFFFAA",
+      borderRadius: "10",
+      marginTop: "5%",
+      marginHorizontal: "5%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+  });
+
+  const styles_landscape = StyleSheet.create({
+    main_container_loading_error: {
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
+      height: "100%",
+      alignItems: "center",
+    },
+    main_container_profile: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "row",
+    },
+    info_user_container: {
+      width: "50%",
+      height: "100%",
+    },
+    info_user: {
+      height: "80%",
+      width: "50%",
+      display: "flex",
+    },
+    user_profile_pic_container: {
+      width: "90%",
+      height: "80%",
+      marginTop: "5%",
+      marginHorizontal: "5%",
+    },
+    user_login_container: {
+      width: "90%",
+      height: "15%",
+      backgroundColor: "#FFFFFFAA",
+      borderRadius: "10",
+      marginTop: "5%",
+      marginHorizontal: "5%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "center",
     },
   });
 
   useEffect(() => {
-    // console.log("useEffect");
-    // if (userDisplay != null)
-    // // console.log("useEffect", userDisplay.cursus_users[0].has_coalition);
     if (accessToken == "") {
       const timeoutId = setTimeout(() => {
-        // console.log(UID, SECRET);
         axios
           .post(
             "https://api.intra.42.fr/oauth/token",
             `grant_type=client_credentials&client_id=${UID}&client_secret=${SECRET}`
           )
           .then((response) => {
-            console.log("access token");
             setAccessToken(response.data.access_token);
-            // // console.log("auth", response.data.access_token);
             clearTimeout(timeoutId);
           })
           .catch((error) => {
-            // console.log("tocken err", error);
             clearTimeout(timeoutId);
             setError(true);
           });
@@ -216,13 +216,6 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log("user display");
-          // console.log('oui 1', response.data)
-          console.log("oui 1", Object.keys(response.data.cursus_users[1]));
-          console.log(response.data.cursus_users[1].skills);
-          // // console.log(response.data);
-          // // console.log(response.data.cursus_users[1]);
-
           if (Object.keys(response.data) == ["data"]) {
             setUserDisplay(response.data.data);
             setUserProject(response.data.data.projects_users);
@@ -230,16 +223,8 @@ const ProfileScreen = ({ navigation, route }) => {
             setUserDisplay(response.data);
             setUserProject(response.data.projects_users);
           }
-
-          // if (!response.data.cursus_users[0].has_coalition) {
-          //     // const timeout_id = setTimeout(() => {
-          //     //     setLoading(false);
-          //     //     clearInterval(timeout_id);
-          //     // }, 1000);
-          // }
         })
         .catch((err) => {
-          // console.log("user err", err);
           setError(true);
         });
     } else if (
@@ -262,9 +247,6 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log("user coa");
-          console.log(Object.keys(response.data[0]));
-          // console.log(response.data);
           setUserCoa(response.data);
 
           const timeout_id = setTimeout(() => {
@@ -273,7 +255,6 @@ const ProfileScreen = ({ navigation, route }) => {
           }, 1000);
         })
         .catch((err) => {
-          console.log("coa err", err);
           setError(true);
         });
     }
@@ -290,10 +271,31 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   }, [selectedCursus]);
 
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      "change",
+      ({ window, screen }) => {
+        setOrientation(isPortrait() ? "PORTRAIT" : "LANDSCAPE");
+      }
+    );
+    return () => subscription?.remove();
+  });
+
   if (error)
     return (
-      <View style={styles.main_container_loading_error}>
-        <Icon name="warning" size={"100%"} color="white"></Icon>
+      <View
+        style={
+          orientation == "PORTRAIT"
+            ? styles_portrait.main_container_loading_error
+            : styles_landscape.main_container_loading_error
+        }
+      >
+        <Icon
+          name="warning"
+          style={orientation == "PORTRAIT" ? {} : { marginTop: "15%" }}
+          size={"100%"}
+          color="white"
+        ></Icon>
         <Text
           style={{ fontSize: 20, color: "white", marginTop: "2%" }}
         >{`${route.params.login}'s profile wasn't found, try again`}</Text>
@@ -313,7 +315,13 @@ const ProfileScreen = ({ navigation, route }) => {
 
   if (loading)
     return (
-      <View style={styles.main_container_loading_error}>
+      <View
+        style={
+          orientation == "PORTRAIT"
+            ? styles_portrait.main_container_loading_error
+            : styles_landscape.main_container_loading_error
+        }
+      >
         <ActivityIndicator size="large" color="purple"></ActivityIndicator>
         <Text
           style={{ color: "white", marginTop: "10%", fontSize: 20 }}
@@ -322,8 +330,20 @@ const ProfileScreen = ({ navigation, route }) => {
     );
 
   return (
-    <View style={styles.main_container_profile}>
-      <View style={styles.info_user_container}>
+    <View
+      style={
+        orientation == "PORTRAIT"
+          ? styles_portrait.main_container_profile
+          : styles_landscape.main_container_profile
+      }
+    >
+      <View
+        style={
+          orientation == "PORTRAIT"
+            ? styles_portrait.info_user_container
+            : styles_landscape.info_user_container
+        }
+      >
         {userCoa != null ? (
           <Image
             source={{
@@ -339,15 +359,19 @@ const ProfileScreen = ({ navigation, route }) => {
           <></>
         )}
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <View style={{ height: "80%", width: "50%", display: "flex" }}>
+          <View
+            style={
+              orientation == "PORTRAIT"
+                ? styles_portrait.info_user
+                : styles_landscape.info_user
+            }
+          >
             <View
-              style={{
-                width: "90%",
-                height: "80%",
-                // backgroundColor: "yellow",
-                marginTop: "5%",
-                marginHorizontal: "5%",
-              }}
+              style={
+                orientation == "PORTRAIT"
+                  ? styles_portrait.user_profile_pic_container
+                  : styles_landscape.user_profile_pic_container
+              }
             >
               <Image
                 source={{ uri: userDisplay.image.link }}
@@ -355,19 +379,11 @@ const ProfileScreen = ({ navigation, route }) => {
               ></Image>
             </View>
             <View
-              style={{
-                width: "90%",
-                height: "15%",
-                backgroundColor: "#FFFFFFAA",
-                borderRadius: "10",
-                // opacity: '0.5',
-                marginTop: "5%",
-                marginHorizontal: "5%",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
+              style={
+                orientation == "PORTRAIT"
+                  ? styles_portrait.user_login_container
+                  : styles_landscape.user_login_container
+              }
             >
               <Text style={{ fontSize: "20" }}>{`Login: `}</Text>
               <Text
@@ -377,7 +393,13 @@ const ProfileScreen = ({ navigation, route }) => {
               </Text>
             </View>
           </View>
-          <View style={{ height: "80%", width: "50%", display: "flex" }}>
+          <View
+            style={
+              orientation == "PORTRAIT"
+                ? styles_portrait.info_user
+                : styles_landscape.info_user
+            }
+          >
             <View
               style={{
                 display: "flex",
@@ -640,7 +662,9 @@ const ProfileScreen = ({ navigation, route }) => {
           ></View>
         </View>
       </View>
-      <ScrollView style={{ maxHeight: "60%" }}>
+      <ScrollView
+        style={{ maxHeight: orientation == "PORTRAIT" ? "60%" : "100%" }}
+      >
         <View
           style={{
             display: "flex",
@@ -675,7 +699,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenProject(!openProject)}}
+              onPress={() => {
+                setopenProject(!openProject);
+              }}
               name="arrow-up"
               size={30}
             />
@@ -684,7 +710,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenProject(!openProject)}}
+              onPress={() => {
+                setopenProject(!openProject);
+              }}
               name="arrow-down"
               size={30}
             />
@@ -750,7 +778,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenProjectInProgress(!openProjectInProgress)}}
+              onPress={() => {
+                setopenProjectInProgress(!openProjectInProgress);
+              }}
               name="arrow-up"
               size={30}
             />
@@ -759,7 +789,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenProjectInProgress(!openProjectInProgress)}}
+              onPress={() => {
+                setopenProjectInProgress(!openProjectInProgress);
+              }}
               name="arrow-down"
               size={30}
             />
@@ -825,7 +857,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenSkills(!openSkills)}}
+              onPress={() => {
+                setopenSkills(!openSkills);
+              }}
               name="arrow-up"
               size={30}
             />
@@ -834,7 +868,9 @@ const ProfileScreen = ({ navigation, route }) => {
               style={{
                 marginRight: "2%",
               }}
-              onPress={() => {setopenSkills(!openSkills)}}
+              onPress={() => {
+                setopenSkills(!openSkills);
+              }}
               name="arrow-down"
               size={30}
             />
@@ -886,7 +922,7 @@ const ProfileScreen = ({ navigation, route }) => {
                           height: "40%",
                           backgroundColor: "#FFFFFF44",
                           marginRight: "2%",
-                          marginTop: '2%',
+                          marginTop: "2%",
                           borderRadius: 10,
                           display: "flex",
                           justifyContent: "center",
@@ -896,7 +932,7 @@ const ProfileScreen = ({ navigation, route }) => {
                         <View
                           style={{
                             position: "absolute",
-                            width: `${item.level * 100 / 20}%`,
+                            width: `${(item.level * 100) / 20}%`,
                             height: "100%",
                             backgroundColor: "red",
                           }}
