@@ -134,7 +134,7 @@ const ProfileScreen = ({ navigation, route }) => {
       width: "90%",
       height: "15%",
       backgroundColor: "#FFFFFFAA",
-      borderRadius: "10",
+      borderRadius: 10,
       marginTop: "5%",
       marginHorizontal: "5%",
       display: "flex",
@@ -177,7 +177,7 @@ const ProfileScreen = ({ navigation, route }) => {
       width: "90%",
       height: "15%",
       backgroundColor: "#FFFFFFAA",
-      borderRadius: "10",
+      borderRadius: 10,
       marginTop: "5%",
       marginHorizontal: "5%",
       display: "flex",
@@ -216,7 +216,10 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
+          console.log(Object.keys(response.data))
+          console.log(response.data.cursus_users)
           if (Object.keys(response.data) == ["data"]) {
+
             setUserDisplay(response.data.data);
             setUserProject(response.data.data.projects_users);
           } else {
@@ -247,6 +250,7 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
+          console.log(response.data)
           setUserCoa(response.data);
 
           const timeout_id = setTimeout(() => {
@@ -385,9 +389,9 @@ const ProfileScreen = ({ navigation, route }) => {
                   : styles_landscape.user_login_container
               }
             >
-              <Text style={{ fontSize: "20" }}>{`Login: `}</Text>
+              <Text style={{ fontSize: 20 }}>{`Login: `}</Text>
               <Text
-                style={{ fontSize: "20", fontWeight: "900", color: "black" }}
+                style={{ fontSize: 20, fontWeight: "900", color: "black" }}
               >
                 {userDisplay.login}
               </Text>
@@ -424,7 +428,7 @@ const ProfileScreen = ({ navigation, route }) => {
               >
                 <Text
                   style={{
-                    fontSize: "10",
+                    fontSize: 10,
                     marginLeft: "2%",
                     marginTop: "2%",
                     color: "white",
@@ -435,7 +439,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 </Text>
                 <Text
                   style={{
-                    fontSize: "20",
+                    fontSize: 20,
                     alignSelf: "center",
                     marginTop: "auto",
                     marginBottom: "auto",
@@ -895,6 +899,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 (item) => {
                   return (
                     <View
+                      key={item.name}
                       style={{
                         width: "90%",
                         height: 80,

@@ -17,42 +17,6 @@ function isPortrait() {
   return dim.height >= dim.width;
 }
 
-// export class SplashScreen extends Component {
-//     constructor(props) {
-//       super(props);
-//       this.state = {
-//         shake: new Animated.Value(0),
-//       };
-//     }
-  
-//     startShake = () => {
-//       this.state.shake.setValue(0);
-//       Animated.timing(this.state.shake, {
-//         toValue: 1,
-//         duration: 500,
-//         useNativeDriver: true,
-//       }).start();
-//     };
-  
-//     render() {
-  
-//       const shake = this.state.shake.interpolate({
-//         inputRange: [0, 0.25, 0.5, 0.75, 1],
-//         outputRange: [0, -5, 0, 5, 0],
-//       });
-  
-//       return (
-//         <Animated.View
-//           style={[
-//             { transform: [{ translateX: shake }]},
-//           ]}
-//         >
-//           {this.props.children}
-//         </Animated.View>
-//       );
-//     }
-//   }
-
 const HomePage = ({ navigation }) => {
   const [orientation, setOrientation] = useState(
     isPortrait() ? "PORTRAIT" : "LANDSCAPE"
@@ -86,7 +50,7 @@ const HomePage = ({ navigation }) => {
       alignItems: "center",
     },
     text: {
-      fontSize: "30",
+      fontSize: 30,
       textAlign: "center",
       color: "white",
     },
@@ -94,8 +58,8 @@ const HomePage = ({ navigation }) => {
       marginTop: "10%",
       paddingHorizontal: "5%",
       backgroundColor: "black",
-      borderRadius: "10",
-      fontSize: "25",
+      borderRadius: 10,
+      fontSize: 25,
       padding: "2%",
       color: "white",
     },
@@ -130,7 +94,7 @@ const HomePage = ({ navigation }) => {
       alignItems: "center",
     },
     text: {
-      fontSize: "30",
+      fontSize: 30,
       textAlign: "center",
       color: "white",
     },
@@ -138,14 +102,14 @@ const HomePage = ({ navigation }) => {
       marginTop: "10%",
       paddingHorizontal: "5%",
       backgroundColor: "black",
-      borderRadius: "10",
-      fontSize: "25",
+      borderRadius: 10,
+      fontSize: 25,
       padding: "2%",
       color: "white",
     },
   });
 
-  const [textInputValue, setTextInputValue] = useState("ldauga");
+  const [textInputValue, setTextInputValue] = useState("");
 
   const shakeRef = useRef(null);
 
