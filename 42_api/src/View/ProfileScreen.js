@@ -14,77 +14,13 @@ import { UID, SECRET } from "@env";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import ProjectElement from "../Component/ProjectElement";
+import {displayProject, displayProjectInProgress} from "../Component/DisplayProject";
 function isPortrait() {
   const dim = Dimensions.get("screen");
   return dim.height >= dim.width;
 }
 
-const displayProject = (project) => {
-  if (project == null) return <></>;
 
-  const tmp = project;
-
-  return (
-    <>
-      {tmp.map((item) => {
-        return (
-          <ProjectElement
-            projectName={item.project.name}
-            projectMark={item.final_mark}
-            validated={item["validated?"]}
-            key={item.project.name}
-          />
-        );
-      })}
-    </>
-  );
-};
-
-const displayProjectInProgress = (project) => {
-  if (project == null) return <></>;
-
-  const tmp = project;
-
-  if (!tmp.length)
-    return (
-      <View
-        style={{
-          width: 300,
-          height: 175,
-          backgroundColor: "#00000044",
-          marginLeft: "auto",
-          marginRight: "auto",
-          borderWidth: 5,
-          borderColor: "black",
-          borderRadius: 15,
-          borderStyle: "dashed",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Icon name="window-close-o" size={80}></Icon>
-        <Text style={{ fontSize: 20, fontWeight: "900", marginTop: "5%" }}>
-          No project in progress...
-        </Text>
-      </View>
-    );
-
-  return (
-    <>
-      {tmp.map((item) => {
-        return (
-          <ProjectElement
-            projectName={item.project.name}
-            projectMark={item.final_mark}
-            validated={item["validated?"]}
-            status={"in_progress"}
-            key={item.project.name}
-          />
-        );
-      })}
-    </>
-  );
-};
 
 const ProfileScreen = ({ navigation, route }) => {
   const [orientation, setOrientation] = useState(
@@ -95,7 +31,6 @@ const ProfileScreen = ({ navigation, route }) => {
   const [openProject, setopenProject] = useState(false);
   const [openProjectInProgress, setopenProjectInProgress] = useState(false);
   const [openSkills, setopenSkills] = useState(false);
-  const [accessToken, setAccessToken] = useState("");
   const [userDisplay, setUserDisplay] = useState(null);
   const [userProject, setUserProject] = useState(null);
   const [selectedCursus, setSelectedCursus] = useState("");
@@ -187,43 +122,22 @@ const ProfileScreen = ({ navigation, route }) => {
   });
 
   useEffect(() => {
-    if (accessToken == "") {
-      const timeoutId = setTimeout(() => {
-        axios
-          .post(
-            "https://api.intra.42.fr/oauth/token",
-            `grant_type=client_credentials&client_id=${UID}&client_secret=${SECRET}`
-          )
-          .then((response) => {
-            setAccessToken(response.data.access_token);
-            clearTimeout(timeoutId);
-          })
-          .catch((error) => {
-            clearTimeout(timeoutId);
-            setError(true);
-          });
-      }, 1000);
-    } else if (userDisplay == null) {
+    if (userDisplay == null) {
       axios
         .get(
           "https://api.intra.42.fr/v2/users/" +
             route.params.login.toLowerCase(),
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${route.params.accessToken}`,
             },
           }
         )
         .then((response) => {
           console.log(Object.keys(response.data));
           console.log(response.data.cursus_users);
-          if (Object.keys(response.data) == ["data"]) {
-            setUserDisplay(response.data.data);
-            setUserProject(response.data.data.projects_users);
-          } else {
-            setUserDisplay(response.data);
-            setUserProject(response.data.projects_users);
-          }
+          setUserDisplay(response.data);
+          setUserProject(response.data.projects_users);
         })
         .catch((err) => {
           setError(true);
@@ -243,7 +157,7 @@ const ProfileScreen = ({ navigation, route }) => {
             "/coalitions",
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${route.params.accessToken}`,
             },
           }
         )
@@ -260,7 +174,7 @@ const ProfileScreen = ({ navigation, route }) => {
           setError(true);
         });
     }
-  }, [accessToken, userDisplay]);
+  }, [userDisplay]);
 
   useEffect(() => {
     if (userDisplay != null) {
@@ -376,6 +290,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }
             >
               <Image
+                // deepcode ignore OR: <please specify a reason of ignoring this>
                 source={{ uri: userDisplay.image.link }}
                 style={{ height: "100%", width: "auto" }}
               ></Image>
@@ -412,7 +327,7 @@ const ProfileScreen = ({ navigation, route }) => {
               <View
                 style={{
                   width: "70%",
-                  height: "90%",
+                  height: "100%",
                   marginVertical: "5%",
                   // backgroundColor: "red",
                   backgroundColor: "#00000088",
@@ -428,7 +343,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     marginLeft: "2%",
                     marginTop: "2%",
                     color: "white",
-                    height: "20%",
+                    // height: "20%",
                   }}
                 >
                   BlackHole at :
@@ -441,7 +356,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     marginBottom: "auto",
                     color: "white",
                     width: "96%",
-                    height: "40%",
+                    // height: "40%",
                     display: "flex",
                     textAlign: "center",
                   }}

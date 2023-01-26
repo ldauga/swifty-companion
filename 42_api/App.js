@@ -1,27 +1,14 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  ScrollView,
-  Keyboard,
-  KeyboardAvoidingView,
-  RootTagContext,
 } from "react-native";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ActivityIndicator, Button } from "react-native-paper";
-import { ShakeDiv } from "./src/Component/ShakeDiv";
 import axios from "axios";
-import Svg, { Path, Polygon, SvgUri } from "react-native-svg";
 import { UID, SECRET } from "@env";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { Picker } from "@react-native-picker/picker";
 import HomePage from "./src/View/HomePage.js";
 import ProfileScreen from "./src/View/ProfileScreen.js";
+// import * as SplashScreen from 'expo-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +23,46 @@ const MyTheme = {
   },
 };
 
+// SplashScreen.preventAutoHideAsync();
+
 export default function App() {
+  const [accessToken, setAccessToken] = useState("");
+
+  useEffect(() => {
+    // SplashScreen.show()
+    axios
+        .post(
+          "https://api.intra.42.fr/oauth/token",
+          `grant_type=client_credentials&client_id=${UID}&client_secret=${SECRET}`
+        )
+        .then((response) => {
+          console.log('sisi')
+          // SplashScreen.hideAsync();
+          setAccessToken(response.data.access_token);
+          setInterval(() => {
+            console.log("oui");
+            axios
+              .post(
+                "https://api.intra.42.fr/oauth/token",
+                `grant_type=client_credentials&client_id=${UID}&client_secret=${SECRET}`
+              )
+              .then((response) => {
+                setAccessToken(response.data.access_token);
+              })
+              .catch((error) => {});
+          }, 720000);
+        })
+        .catch((error) => {});
+    
+  }, []);
+
+  useEffect(() => {
+   console.log(accessToken)
+  }, [accessToken]);
+
+  if (accessToken == '')
+    return (<></>)
+
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator>
@@ -44,6 +70,7 @@ export default function App() {
           name="Home"
           component={HomePage}
           options={{ title: "Home" }}
+          initialParams={{accessToken: accessToken}}
         />
         <Stack.Screen name="Info Stud" component={ProfileScreen} />
       </Stack.Navigator>

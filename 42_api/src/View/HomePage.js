@@ -17,7 +17,11 @@ function isPortrait() {
   return dim.height >= dim.width;
 }
 
-const HomePage = ({ navigation }) => {
+const HomePage = ({ navigation, route }) => {
+  useEffect(() => {
+    console.log(route)
+  })
+
   const [orientation, setOrientation] = useState(
     isPortrait() ? "PORTRAIT" : "LANDSCAPE"
   );
@@ -123,6 +127,8 @@ const HomePage = ({ navigation }) => {
     return () => subscription?.remove();
   });
 
+  
+
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -196,7 +202,7 @@ const HomePage = ({ navigation }) => {
               onChangeText={(value) => setTextInputValue(value)}
               onSubmitEditing={() => {
                 if (textInputValue != "") {
-                  navigation.navigate("Info Stud", { login: textInputValue });
+                  navigation.navigate("Info Stud", { login: textInputValue, accessToken: route.params.accessToken });
                 } else {
                   shakeRef.current.startShake();
                 }
@@ -209,7 +215,7 @@ const HomePage = ({ navigation }) => {
             style={{ marginTop: "20%" }}
             onPress={() => {
               if (textInputValue != "") {
-                navigation.navigate("Info Stud", { login: textInputValue });
+                navigation.navigate("Info Stud", { login: textInputValue, accessToken: route.params.accessToken });
               } else {
                 shakeRef.current.startShake();
               }
