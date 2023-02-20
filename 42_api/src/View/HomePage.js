@@ -18,10 +18,6 @@ function isPortrait() {
 }
 
 const HomePage = ({ navigation, route }) => {
-  useEffect(() => {
-    console.log(route)
-  })
-
   const [orientation, setOrientation] = useState(
     isPortrait() ? "PORTRAIT" : "LANDSCAPE"
   );
@@ -126,8 +122,6 @@ const HomePage = ({ navigation, route }) => {
     );
     return () => subscription?.remove();
   });
-
-  
 
   return (
     <KeyboardAvoidingView

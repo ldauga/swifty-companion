@@ -15,12 +15,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import ProjectElement from "../Component/ProjectElement";
 import {displayProject, displayProjectInProgress} from "../Component/DisplayProject";
+
 function isPortrait() {
   const dim = Dimensions.get("screen");
   return dim.height >= dim.width;
 }
-
-
 
 const ProfileScreen = ({ navigation, route }) => {
   const [orientation, setOrientation] = useState(
@@ -34,6 +33,8 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userDisplay, setUserDisplay] = useState(null);
   const [userProject, setUserProject] = useState(null);
   const [selectedCursus, setSelectedCursus] = useState("");
+  
+  const [scrollGlobal, setScrollGlobal] = useState(true);
 
   const [userCoa, setUserCoa] = useState(null);
 
@@ -134,8 +135,6 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log(Object.keys(response.data));
-          console.log(response.data.cursus_users);
           setUserDisplay(response.data);
           setUserProject(response.data.projects_users);
         })
@@ -162,7 +161,6 @@ const ProfileScreen = ({ navigation, route }) => {
           }
         )
         .then((response) => {
-          console.log(response.data);
           setUserCoa(response.data);
 
           const timeout_id = setTimeout(() => {
@@ -209,7 +207,7 @@ const ProfileScreen = ({ navigation, route }) => {
         <Icon
           name="warning"
           style={orientation == "PORTRAIT" ? {} : { marginTop: "15%" }}
-          size={"100%"}
+          size={100}
           color="white"
         ></Icon>
         <Text
@@ -219,7 +217,6 @@ const ProfileScreen = ({ navigation, route }) => {
           icon="home"
           mode="contained"
           style={{ marginTop: "20%", backgroundColor: "purple" }}
-          // disabled={textInputValue == ''}
           onPress={() => {
             navigation.navigate("Home");
           }}
@@ -290,7 +287,6 @@ const ProfileScreen = ({ navigation, route }) => {
               }
             >
               <Image
-                // deepcode ignore OR: <please specify a reason of ignoring this>
                 source={{ uri: userDisplay.image.link }}
                 style={{ height: "100%", width: "auto" }}
               ></Image>
@@ -303,7 +299,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }
             >
               <Text style={{ fontSize: 20 }}>{`Login: `}</Text>
-              <Text style={{ fontSize: 20, fontWeight: "900", color: "black" }}>
+              <Text style={{ fontSize: 20, fontWeight: "'900'", color: "black" }}>
                 {userDisplay.login}
               </Text>
             </View>
@@ -321,7 +317,6 @@ const ProfileScreen = ({ navigation, route }) => {
                 flexDirection: "row",
                 width: "100%",
                 height: "25.5%",
-                // backgroundColor: "red",
               }}
             >
               <View
@@ -329,7 +324,6 @@ const ProfileScreen = ({ navigation, route }) => {
                   width: "70%",
                   height: "100%",
                   marginVertical: "5%",
-                  // backgroundColor: "red",
                   backgroundColor: "#00000088",
                   borderWidth: 2,
                   borderStyle: "solid",
@@ -343,7 +337,6 @@ const ProfileScreen = ({ navigation, route }) => {
                     marginLeft: "2%",
                     marginTop: "2%",
                     color: "white",
-                    // height: "20%",
                   }}
                 >
                   BlackHole at :
@@ -356,7 +349,6 @@ const ProfileScreen = ({ navigation, route }) => {
                     marginBottom: "auto",
                     color: "white",
                     width: "96%",
-                    // height: "40%",
                     display: "flex",
                     textAlign: "center",
                   }}
@@ -387,10 +379,8 @@ const ProfileScreen = ({ navigation, route }) => {
                   style={{
                     width: 50,
                     height: 60,
-                    // display
                     marginLeft: "auto",
                     marginRight: "2%",
-                    // backgroundColor: "red",
                   }}
                 >
                   <Svg
@@ -449,8 +439,6 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={{ color: "white" }}>Cursus :</Text>
                 <Picker
                   style={{
-                    // marginLeft: "auto",
-                    // marginRight: "1%",
                     width: "65%",
                     height: "70%",
                   }}
@@ -459,7 +447,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     height: "100%",
                     color: "white",
                     fontSize: 10,
-                    fontWeight: "900",
+                    fontWeight: '900',
                     backgroundColor: "#00000055",
                   }}
                   selectedValue={selectedCursus}
@@ -541,7 +529,7 @@ const ProfileScreen = ({ navigation, route }) => {
             style={{
               width: "100%",
               textAlign: "center",
-              fontWeight: "900",
+              fontWeight: '900',
               color: "#000000",
             }}
           >{`Level ${Math.round(
@@ -579,6 +567,8 @@ const ProfileScreen = ({ navigation, route }) => {
       </View>
       <ScrollView
         style={{ maxHeight: orientation == "PORTRAIT" ? "60%" : "100%" }}
+        scrollEnabled={scrollGlobal}
+        onScrollBeginDrag={() => {console.log('sisisisisi 1 ')}}
       >
         <View
           style={{
@@ -604,7 +594,7 @@ const ProfileScreen = ({ navigation, route }) => {
             style={{
               marginLeft: "2%",
               fontSize: 25,
-              fontWeight: "800",
+              fontWeight: '800',
             }}
           >
             Project :
@@ -636,7 +626,6 @@ const ProfileScreen = ({ navigation, route }) => {
         <View
           style={{
             width: "95%",
-            // height: 400,
             height: openProject ? 200 : 0,
             backgroundColor:
               userCoa != null &&
@@ -644,9 +633,14 @@ const ProfileScreen = ({ navigation, route }) => {
                 ? userCoa.data[Math.floor(selectedCursus) ? 0 : 1].color
                 : userCoa[Math.floor(selectedCursus) ? 0 : 1].color,
             marginHorizontal: "2.5%",
+            flex: 1
           }}
         >
-          <ScrollView style={{}}>
+          <ScrollView
+          onTouchStart={() => {setScrollGlobal(false)}}
+          onTouchEnd={() => {setScrollGlobal(true)}}
+          onScrollEndDrag={() => {setScrollGlobal(true)}}
+          >
             {displayProject(
               userProject != null
                 ? userProject.filter(
@@ -683,7 +677,7 @@ const ProfileScreen = ({ navigation, route }) => {
             style={{
               marginLeft: "2%",
               fontSize: 25,
-              fontWeight: "800",
+              fontWeight: '800',
             }}
           >
             Project In Progress :
@@ -715,7 +709,6 @@ const ProfileScreen = ({ navigation, route }) => {
         <View
           style={{
             width: "95%",
-            // height: 400,
             height: openProjectInProgress ? 200 : 0,
             backgroundColor:
               userCoa != null &&
@@ -725,7 +718,11 @@ const ProfileScreen = ({ navigation, route }) => {
             marginHorizontal: "2.5%",
           }}
         >
-          <ScrollView style={{}}>
+          <ScrollView
+                onTouchStart={() => {setScrollGlobal(false); console.log('touch start 1') }}
+                onTouchEnd={() => {setScrollGlobal(true); console.log('touch end 1') }}
+                onScrollEndDrag={() => {setScrollGlobal(true); console.log('scroll end 1') }}
+          >
             {displayProjectInProgress(
               userProject != null
                 ? userProject.filter(
@@ -762,7 +759,7 @@ const ProfileScreen = ({ navigation, route }) => {
             style={{
               marginLeft: "2%",
               fontSize: 25,
-              fontWeight: "800",
+              fontWeight: '800',
             }}
           >
             Skills :
@@ -794,7 +791,6 @@ const ProfileScreen = ({ navigation, route }) => {
         <View
           style={{
             width: "95%",
-            // height: 400,
             height: openSkills ? 400 : 0,
             backgroundColor:
               userCoa != null &&
@@ -804,7 +800,11 @@ const ProfileScreen = ({ navigation, route }) => {
             marginHorizontal: "2.5%",
           }}
         >
-          <ScrollView>
+          <ScrollView
+                    onTouchStart={() => {setScrollGlobal(false); console.log('touch start 1') }}
+                    onTouchEnd={() => {setScrollGlobal(true); console.log('touch end 1') }}
+                    onScrollEndDrag={() => {setScrollGlobal(true); console.log('scroll end 1') }}
+          >
             {userDisplay != null &&
               userDisplay.cursus_users[Math.floor(selectedCursus)].skills.map(
                 (item) => {
@@ -818,9 +818,7 @@ const ProfileScreen = ({ navigation, route }) => {
                         marginHorizontal: "5%",
                         marginVertical: "1%",
                         display: "flex",
-                        // flexDirection: "row",
                         alignItems: "center",
-                        // justifyContent: "space-between",
                       }}
                     >
                       <Text

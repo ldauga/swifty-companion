@@ -8,14 +8,13 @@ import axios from "axios";
 import { UID, SECRET } from "@env";
 import HomePage from "./src/View/HomePage.js";
 import ProfileScreen from "./src/View/ProfileScreen.js";
-// import * as SplashScreen from 'expo-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
 const MyTheme = {
   colors: {
     primary: "purple",
-    background: "rgb(20, 20, 20)",
+    background: "rgb(50, 50, 50)",
     card: "black",
     text: "white",
     border: "black",
@@ -23,24 +22,18 @@ const MyTheme = {
   },
 };
 
-// SplashScreen.preventAutoHideAsync();
-
 export default function App() {
   const [accessToken, setAccessToken] = useState("");
 
   useEffect(() => {
-    // SplashScreen.show()
     axios
         .post(
           "https://api.intra.42.fr/oauth/token",
           `grant_type=client_credentials&client_id=${UID}&client_secret=${SECRET}`
         )
         .then((response) => {
-          console.log('sisi')
-          // SplashScreen.hideAsync();
           setAccessToken(response.data.access_token);
           setInterval(() => {
-            console.log("oui");
             axios
               .post(
                 "https://api.intra.42.fr/oauth/token",
@@ -52,12 +45,13 @@ export default function App() {
               .catch((error) => {});
           }, 720000);
         })
-        .catch((error) => {});
+        .catch((error) => {
+        });
     
   }, []);
 
   useEffect(() => {
-   console.log(accessToken)
+   console.log('accessToken :', accessToken)
   }, [accessToken]);
 
   if (accessToken == '')
